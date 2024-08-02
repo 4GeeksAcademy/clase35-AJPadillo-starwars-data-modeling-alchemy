@@ -6,6 +6,18 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
+favorite_planets = Table(
+    'favorite_planets', Base.metadata,
+    Column('user.id', Integer, ForeignKey('user.id'), primary_key=True),
+    Column('planet_id', Integer, ForeignKey('planet.id'), primary_key=True)
+)
+
+favorite_characters = Table(
+    'favorite_characters', Base.metadata,
+    Column('user.id', Integer, ForeignKey('user.id'), primary_key=True),
+    Column('character_id', Integer, ForeignKey('character.id'), primary_key=True)
+)
+
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
@@ -13,7 +25,8 @@ class User(Base):
     firstname = Column(String(250), nullable=False)
     lastname = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
-    favorites = relationship('Favorite', backref='user')
+    favorite_planets = relationship('Planet', secondary=favorite_planets, backref='favorited_by')
+    favorite_characters = relationship('Character', secondary=favorite_characters, backref='favorited_by')
 
 class Character(Base):
     __tablename__ = 'character'
@@ -22,7 +35,6 @@ class Character(Base):
     birth_year = Column(String(250), nullable=False)
     eye_color = Column(String(250), nullable=False)
     height = Column(String(250), nullable=False)
-    favorites = relationship('Favorite', backref='character')
 
 class Planet(Base):
     __tablename__ = 'planet'
@@ -31,14 +43,13 @@ class Planet(Base):
     diameter = Column(String(250), nullable=False)
     climate = Column(String(250), nullable=False)
     population = Column(String(250), nullable=False)
-    favorites = relationship('Favorite', backref='planet')
 
-class Favorite(Base):
-    __tablename__ = 'favorite'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    character_id = Column(Integer, ForeignKey('character.id'), nullable=True)
-    planet_id = Column(Integer, ForeignKey('planet.id'), nullable=True)
+# class Favorite(Base):
+#     __tablename__ = 'favorite'
+#     id = Column(Integer, primary_key=True)
+#     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+#     character_id = Column(Integer, ForeignKey('character.id'), nullable=True)
+#     planet_id = Column(Integer, ForeignKey('planet.id'), nullable=True)
 
 ## Draw from SQLAlchemy base
 try:
